@@ -1,10 +1,10 @@
 import { useState } from "react";
-import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
@@ -24,7 +24,14 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="*" element={<NotFound />} />
