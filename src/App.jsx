@@ -1,28 +1,15 @@
-import { useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import PrivateRoute from "./components/PrivateRoute";
+import NavBar from "./components/NavBar";
 
 function App() {
   return (
     <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Dashboard</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/blog">Blog</Link>
-          </li>
-        </ul>
-      </nav>
-
+      <NavBar />
       <Routes>
         <Route
           path="/"

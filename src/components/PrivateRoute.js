@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children }) => {
+const PrivateRoute = ({ children }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -17,4 +17,4 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : null;
 };
 
-export default ProtectedRoute;
+export default PrivateRoute;
