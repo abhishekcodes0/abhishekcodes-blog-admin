@@ -2,9 +2,10 @@ import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
 import PrivateRoute from "./components/PrivateRoute";
 import NavBar from "./components/NavBar";
+import CreateBlog from "./pages/CreateBlog";
+import EditBlog from "./pages/EditBlog";
 
 function App() {
   return (
@@ -19,8 +20,25 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/create-blog"
+          element={
+            <PrivateRoute>
+              <CreateBlog />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/edit-blog/:slug"
+          element={
+            <PrivateRoute>
+              <EditBlog />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="/login" element={<Login />} />
-        <Route path="/blog" element={<Blog />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("access_token", "Bearer " + res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data));
 
-        navigate("/dashboard"); // Redirect to a protected page
+        navigate("/"); // Redirect to a protected page
       }
     });
   };

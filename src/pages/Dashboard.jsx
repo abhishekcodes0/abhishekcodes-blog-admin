@@ -7,12 +7,25 @@ import { transformDate } from "../../misc/functions";
 
 const Dashboard = () => {
   const [blogs, setBlogs] = useState([]);
+  const [cancelToken, setCancelToken] = useState(null);
   useEffect(() => {
-    axios.get(`${apiUrl}/api/blog/get/all`).then((res) => {
-      if (res.data) {
-        setBlogs(res.data);
+    if (cancelToken) {
+      cancelToken.cancel("Operation canceled by the user.");
+    }
+    const newCancelToken = axios.CancelToken.source();
+    setCancelToken(newCancelToken);
+    axios
+      .get(`${apiUrl}/api/blog/get/all`, {
+        cancelToken: newCancelToken.token,
+      })
+      .then((response) => {
+        setBlogs(response.data);
+      });
+    return () => {
+      if (newCancelToken) {
+        newCancelToken.cancel("Component unmounted.");
       }
-    });
+    };
   }, []);
   return (
     <section className="mt-8 px-24 mt-16">
@@ -20,7 +33,7 @@ const Dashboard = () => {
         Blogs
         <Link
           className="absolute right-0 top-0 bg-black text-white px-4 py-2 rounded text-sm"
-          to={`/admin/create-blog`}
+          to={`/create-blog`}
         >
           Create Blog
         </Link>
@@ -51,7 +64,7 @@ const Dashboard = () => {
 
                     <Link
                       className="mt-4 text-blue-600"
-                      to={`/admin/blog?slug=${blog.slug}`}
+                      to={`/edit-blog/${blog.slug}`}
                     >
                       Edit
                     </Link>
