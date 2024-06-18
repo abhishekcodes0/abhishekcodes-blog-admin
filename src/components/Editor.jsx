@@ -15,22 +15,15 @@ const RichTextEditor = ({ editorState, setEditorState }) => {
     const formData = new FormData();
     formData.append("image", file);
 
-    axios
+    return axios
       .post(`${apiUrl}/api/blog/upload-image`, formData, {
         headers: {
           Authorization: localStorage?.getItem("access_token"),
         },
       })
       .then((res) => {
-        console.log("upload res", res);
+        return { data: { link: res?.data?.url } };
       });
-    // return new Promise((resolve, reject) => {
-    //   // Simulating an image upload, replace with your upload logic
-    //   setTimeout(() => {
-    //     const imageURL = "https://via.placeholder.com/150"; // Example image URL
-    //     resolve({ data: { link: imageURL } });
-    //   }, 2000);
-    // });
   };
 
   return (
