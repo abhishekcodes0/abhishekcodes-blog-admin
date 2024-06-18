@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import axios from "axios";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { apiUrl } from "../../config/urlConfig";
 
 const RichTextEditor = ({ editorState, setEditorState }) => {
   const handleEditorChange = (state) => {
