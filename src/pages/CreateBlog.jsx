@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
-import { stateToHTML } from "draft-js-export-html";
+
 import axios from "axios";
 import BlogFields from "../components/BlogFields";
 import { apiUrl } from "../../config/urlConfig";
 
 const CreateBlog = () => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
   const [blogState, setBlogState] = useState({
     title: undefined,
     summary: undefined,
@@ -18,14 +14,11 @@ const CreateBlog = () => {
     status: "draft",
     thumbnail:
       "https://images.unsplash.com/photo-1718146356507-b9c832eeb106?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    content: "",
   });
-  let htmlcontent = stateToHTML(editorState.getCurrentContent());
-  useEffect(() => {
-    setIsBlogSaved(false);
-  }, [htmlcontent]);
+
   let payload = {
     ...blogState,
-    content: htmlcontent,
   };
   const [isBlogSaved, setIsBlogSaved] = useState(false);
 
@@ -38,12 +31,24 @@ const CreateBlog = () => {
   };
 
   const saveBlog = () => {
+    const modifiedcontent = payload.content.replace(
+      /<h2[^>]*>(.*?)<\/h2>/g,
+      (match, group) => {
+        const id = group.toLowerCase().replace(/\s+/g, "-"); // Generate ID from text
+        console.log("group", group, id);
+        return `<h2 id="${id}">${group}</h2>`;
+      }
+    );
     axios
-      .post(`${apiUrl}/api/blog/create`, payload, {
-        headers: {
-          Authorization: localStorage?.getItem("access_token"),
-        },
-      })
+      .post(
+        `${apiUrl}/api/blog/create`,
+        { ...payload, content: modifiedcontent },
+        {
+          headers: {
+            Authorization: localStorage?.getItem("access_token"),
+          },
+        }
+      )
       .then((res) => {
         if (res.data._id) {
           setIsBlogSaved(true);
@@ -73,7 +78,7 @@ const CreateBlog = () => {
       blogState.slug &&
       blogState.category &&
       blogState.thumbnail &&
-      htmlcontent &&
+      blogState.content &&
       !isBlogSaved
     ) {
       disabled = false;
@@ -87,8 +92,6 @@ const CreateBlog = () => {
       {...{
         getSaveDisabled,
         saveBlog,
-        editorState,
-        setEditorState,
         blogState,
         setBlogState,
         handleBlogStateChange,

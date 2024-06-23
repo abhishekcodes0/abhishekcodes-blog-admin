@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
-import { stateToHTML } from "draft-js-export-html";
-import { stateFromHTML } from "draft-js-import-html";
 import axios from "axios";
 import { apiUrl } from "../../config/urlConfig";
 import BlogFields from "../components/BlogFields";
@@ -10,9 +7,6 @@ import { useParams } from "react-router-dom";
 const Page = () => {
   const { slug } = useParams();
 
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
   const [blogState, setBlogState] = useState({
     title: undefined,
     summary: undefined,
@@ -22,6 +16,7 @@ const Page = () => {
     status: "draft",
     thumbnail:
       "https://images.unsplash.com/photo-1718146356507-b9c832eeb106?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    content: undefined,
   });
 
   const [cancelToken, setCancelToken] = useState(null);
@@ -38,9 +33,6 @@ const Page = () => {
       .then((res) => {
         if (res.data?._id) {
           setBlogState(res.data);
-          let contentState = stateFromHTML(res.data.content);
-          const newEditorState = EditorState.createWithContent(contentState);
-          setEditorState(newEditorState);
         }
       });
     return () => {
@@ -50,14 +42,8 @@ const Page = () => {
     };
   }, []);
 
-  let htmlcontent = stateToHTML(editorState.getCurrentContent());
-  useEffect(() => {
-    setIsBlogSaved(false);
-  }, [htmlcontent]);
-
   let payload = {
     ...blogState,
-    content: htmlcontent,
   };
   const [isBlogSaved, setIsBlogSaved] = useState(false);
 
@@ -70,6 +56,14 @@ const Page = () => {
   };
 
   const updateBlog = () => {
+    const modifiedcontent = payload.content.replace(
+      /<h2[^>]*>(.*?)<\/h2>/g,
+      (match, group) => {
+        const id = group.toLowerCase().replace(/\s+/g, "-"); // Generate ID from text
+        console.log("group", group, id);
+        return `<h2 id="${id}">${group}</h2>`;
+      }
+    );
     let updatePayload = {
       title: payload.title,
       status: "draft",
@@ -78,7 +72,7 @@ const Page = () => {
       category: payload.category,
       isFeatured: payload.isFeatured,
       thumbnail: payload.thumbnail,
-      content: htmlcontent,
+      content: modifiedcontent,
     };
     axios
       .put(`${apiUrl}/api/blog/update/${blogState.slug}`, updatePayload, {
@@ -117,7 +111,7 @@ const Page = () => {
       blogState.slug &&
       blogState.category &&
       blogState.thumbnail &&
-      htmlcontent &&
+      blogState.content &&
       !isBlogSaved
     ) {
       disabled = false;
@@ -130,8 +124,6 @@ const Page = () => {
       {...{
         getSaveDisabled,
         saveBlog: updateBlog,
-        editorState,
-        setEditorState,
         blogState,
         setBlogState,
         handleBlogStateChange,

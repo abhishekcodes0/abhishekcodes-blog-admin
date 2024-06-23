@@ -1,10 +1,8 @@
-import Editor from "./Editor";
+import QuillEditor from "./QuillEditor";
 
 const BlogFields = ({
   getSaveDisabled,
   saveBlog,
-  editorState,
-  setEditorState,
   blogState,
   setBlogState,
   handleBlogStateChange,
@@ -27,15 +25,15 @@ const BlogFields = ({
           >
             save
           </button>
-          <button
-            className={` text-white px-4 py-2 rounded text-sm ${
-              !isBlogSaved ? "bg-gray-600 cursor-not-allowed" : "bg-black"
-            }`}
-            onClick={publishBlog}
-            disabled={!isBlogSaved}
-          >
-            Publish
-          </button>
+          {type == "Edit" && (
+            <button
+              className={` text-white px-4 py-2 rounded text-sm ${"bg-black"}`}
+              onClick={publishBlog}
+              // disabled={!isBlogSaved}
+            >
+              Publish
+            </button>
+          )}
         </div>
       </h2>
 
@@ -43,7 +41,7 @@ const BlogFields = ({
         <div className="w-1/2 h-full">
           <div className="text-lg font-medium">Content</div>
 
-          <Editor editorState={editorState} setEditorState={setEditorState} />
+          <QuillEditor blogState={blogState} setBlogState={setBlogState} />
         </div>
 
         <div className="w-1/2 flex flex-col px-8">
