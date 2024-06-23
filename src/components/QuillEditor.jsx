@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useRef, useCallback } from "react";
 import Editor from "react-quill";
+import axios from "axios";
+import { apiUrl } from "../../config/urlConfig";
 
 import "react-quill/dist/quill.snow.css";
 
@@ -14,21 +16,32 @@ const QuillEditor = ({ blogState, setBlogState }) => {
     input.click();
 
     // When a file is selected
-    input.onchange = () => {
+    input.onchange = async () => {
       const file = input.files[0];
-      const reader = new FileReader();
+      const formData = new FormData();
+      formData.append("image", file);
 
-      // Read the selected file as a data URL
-      reader.onload = () => {
-        const imageUrl = reader.result;
+      try {
+        // Make a POST request to your server to upload the image to S3
+        const response = await axios.post(
+          `${apiUrl}/api/blog/upload-image`,
+          formData,
+          {
+            headers: {
+              Authorization: localStorage?.getItem("access_token"),
+            },
+          }
+        );
+        // Get the uploaded image URL from the response
+        const imageUrl = response.data.url;
+
+        // Insert the image URL into the editor at the current cursor position
         const quillEditor = quill.current.getEditor();
-
-        // Get the current selection range and insert the image at that index
         const range = quillEditor.getSelection(true);
         quillEditor.insertEmbed(range.index, "image", imageUrl, "user");
-      };
-
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     };
   }, []);
   const modules = useMemo(
