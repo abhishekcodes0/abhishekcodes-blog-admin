@@ -4,15 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cross-env APP_ENV=development vite",
-    "prod": "cross-env APP_ENV=production vite",
-    "build": "vite build",
+    "dev": "vite --mode development",
+    "prod": "vite --mode production",
+    "build": "vite build --mode production",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "axios": "1.7.2",
-    "cross-env": "7.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-draft-wysiwyg": "1.15.0",
